@@ -1,0 +1,29 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Python Cache & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Secrets & Local Configurations
+.env
+.env.local
+*.pem
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Downloaded Data & Model Caches
+*.csv
+.cache/
+data/
+
+# IDE & OS Artifacts
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+.DS_Store
+Thumbs.db

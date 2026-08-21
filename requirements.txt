@@ -1,0 +1,22 @@
+# Data handling & Visualization
+pandas
+matplotlib
+seaborn
+scikit-learn
+
+# LLM Frameworks & Tools
+openai
+langchain
+langchain-community
+langchain-openai
+transformers
+torch
+
+# Web App & Data Utilities
+gradio
+kagglehub
+
+# Environment & Jupyter Integration
+python-dotenv
+ipykernel
+ipywidgets
