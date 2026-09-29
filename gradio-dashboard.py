@@ -22,10 +22,13 @@ books["large_thumbnail"] = np.where(
 )
 
 # Build vector database
-raw_documents = TextLoader("tagged_description.txt").load() # Read tagged descriptions into text loader
-text_splitter = CharacterTextSplitter(separator="\n", chunk_size=0, chunk_overlap=0) # Instantiate character text splitter separated by new line
+raw_documents = TextLoader("books_tagged_description.txt", encoding="utf-8").load() # Read tagged descriptions into text loader
+text_splitter = CharacterTextSplitter(separator="\n", chunk_size=1, chunk_overlap=0) # Instantiate character text splitter separated by new line
 documents = text_splitter.split_documents(raw_documents) # Apply to each document to get document chunks (individual book descriptions)
-db_books = Chroma.from_documents(documents, HuggingFaceEmbeddings()) # Convert chunks into document embeddings and store in Chroma vector db
+
+# Using local embeddings
+embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+db_books = Chroma.from_documents(documents, embedding_model) # Convert chunks into document embeddings and store in Chroma vector db
 
 def retrieve_semantic_recommendations(
         query: str,
@@ -84,13 +87,13 @@ def recommend_books(
             authors_str = row["authors"]
 
         caption = f"{row['title']} by {authors_str}: {truncated_description}"
-        results.append(row["large_thumbnail"], caption)
+        results.append((row["large_thumbnail"], caption))
     return results
 
 categories = ["All"] + sorted(books["simple_categories"].unique())
 tones = ["All"] + ["Happy", "Surprising", "Angry", "Suspenseful", "Sad"] # "All" is standin for "Neutral"
 
-with gr.Blocks(theme = gr.theme.Glass()) as dashboard:
+with gr.Blocks(theme = gr.themes.Glass()) as dashboard:
     gr.Markdown("# nextUp")
 
     with gr.Row():
