@@ -1,10 +1,16 @@
 import pandas as pd
 import numpy as np
 
+# # If not using local embeddings:
+# from dotenv import load_dotenv
+# load_dotenv()
+
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+
+import gradio as gr
 
 books = pd.read_csv("books_with_emotions.csv")
 
@@ -80,3 +86,26 @@ def recommend_books(
         caption = f"{row['title']} by {authors_str}: {truncated_description}"
         results.append(row["large_thumbnail"], caption)
     return results
+
+categories = ["All"] + sorted(books["simple_categories"].unique())
+tones = ["All"] + ["Happy", "Surprising", "Angry", "Suspenseful", "Sad"] # "All" is standin for "Neutral"
+
+with gr.Blocks(theme = gr.theme.Glass()) as dashboard:
+    gr.Markdown("# nextUp")
+
+    with gr.Row():
+        user_query = gr.Textbox(label = "Please enter a description of a book:",
+                                placeholder = "e.g., A story about forgiveness")
+        category_dropdown = gr.Dropdown(choices = categories, label = "Select a category:", value = "All")
+        tone_dropdown = gr.Dropdown(choices = tones, label = "Select an emotional tone:", value="All")
+        submit_button = gr.Button("Find recommendations")
+
+    gr.Markdown("## Recommendations")
+    output = gr.Gallery(label = "Recommended books", columns = 8, rows = 2)
+
+    submit_button.click(fn = recommend_books, 
+                        inputs = [user_query, category_dropdown, tone_dropdown], 
+                        outputs = output)
+
+if __name__ == "__main__":
+    dashboard.launch()
